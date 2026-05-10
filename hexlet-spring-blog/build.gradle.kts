@@ -17,6 +17,10 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-web")
   developmentOnly("org.springframework.boot:spring-boot-devtools")
   testImplementation("org.springframework.boot:spring-boot-starter-test")
+  
+  
+  compileOnly("org.projectlombok:lombok:1.18.42")
+  annotationProcessor("org.projectlombok:lombok:1.18.42")
 }
 
 tasks.withType<Test> {
