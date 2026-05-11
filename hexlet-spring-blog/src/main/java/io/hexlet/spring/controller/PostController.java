@@ -4,7 +4,6 @@ import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,25 +12,27 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.hexlet.spring.model.Post;
 
 @RestController
+@RequestMapping("/api/posts")
 public class PostController {
     private List<Post> posts = new ArrayList<>();
 
-    @GetMapping("/posts")
+    @GetMapping
     public ResponseEntity<List<Post>> index(@RequestParam(defaultValue="10") Integer limit){
         List<Post> result = posts.stream().limit(limit).toList();
         return ResponseEntity.ok()
                 .header("Total-Count", String.valueOf(posts.size()))
                 .body(result);
     }
-    @PostMapping("/posts")
-    public ResponseEntity<Post> create(@RequestBody Post post) {
-        if(post.getTitle() == null && post.getTitle().trim().isEmpty() || post.getContent() == null && post.getContent().trim().isEmpty()) {
+    @PostMapping
+    public ResponseEntity<Post> createPost(@RequestBody Post post) {
+        if(post.getTitle() == null || post.getTitle().trim().isEmpty() || post.getContent() == null || post.getContent().trim().isEmpty()) {
             return ResponseEntity.badRequest()
                     .header("Error", "ValidationError")
                     .build();
@@ -40,7 +41,7 @@ public class PostController {
         return ResponseEntity.created(URI.create("/posts")).build();
     }
 
-    @GetMapping("/posts/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<Post> show(@PathVariable String id) {
         var post = posts.stream()
             .filter(p -> p.getTitle().equals(id))
@@ -51,7 +52,7 @@ public class PostController {
         return ResponseEntity.notFound().header("Error", "post with id = " + id + " not found").build();
     }
 
-    @PutMapping("/posts/{id}") // Обновление страницы
+    @PutMapping("/{id}") // Обновление страницы
     public ResponseEntity<Post> update(@PathVariable String id, @RequestBody Post data) {
         var maybePost = posts.stream()
             .filter(p -> p.getTitle().equals(id))
@@ -64,11 +65,11 @@ public class PostController {
             post.setCreatedAt(LocalDateTime.now());
             return ResponseEntity.ok().body(data);
         }
-        return ResponseEntity.notFound().header("Error", "Post with id = " + id + " not found").build();
+        return ResponseEntity.notFound().build();
 
     }
 
-    @DeleteMapping("/posts/{id}") // Удаление страницы
+    @DeleteMapping("/{id}") // Удаление страницы
     public ResponseEntity<Void> destroy(@PathVariable String id) {
         boolean isDeleted = posts.removeIf(p -> p.getTitle().equals(id));
         if(!isDeleted) {
