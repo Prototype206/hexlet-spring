@@ -1,0 +1,12 @@
+/.apt_generated/
+
+.gradle
+
+build
+
+bin/
+.settings/
+.project
+.classpath
+
+jte-classes/
