@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,17 +18,21 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.hexlet.spring.model.Post;
+import io.hexlet.spring.repository.PostRepository;
 
 @RestController
 @RequestMapping("/api/posts")
 public class PostController {
-    private List<Post> posts = new ArrayList<>();
+    //private List<Post> posts = new ArrayList<>();
+
+    @Autowired
+    private PostRepository postRepository;
 
     @GetMapping
     public ResponseEntity<List<Post>> index(@RequestParam(defaultValue="10") Integer limit){
-        List<Post> result = posts.stream().limit(limit).toList();
+        List<Post> result = postRepository.findAll().stream().limit(limit).toList();
         return ResponseEntity.ok()
-                .header("Total-Count", String.valueOf(posts.size()))
+                .header("Total-Count", String.valueOf(postRepository.count()))
                 .body(result);
     }
     @PostMapping
@@ -37,44 +42,41 @@ public class PostController {
                     .header("Error", "ValidationError")
                     .build();
         }
-        posts.add(post);
+        postRepository.save(post);
         return ResponseEntity.created(URI.create("/posts")).build();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Post> show(@PathVariable String id) {
-        var post = posts.stream()
-            .filter(p -> p.getTitle().equals(id))
-            .findFirst();
+        var post = postRepository.findById(Long.valueOf(id));
         if(post.isPresent()) {
             return ResponseEntity.ok().body(post.get());
         }
         return ResponseEntity.notFound().header("Error", "post with id = " + id + " not found").build();
     }
 
-    @PutMapping("/{id}") // Обновление страницы
+    @PutMapping("/{id}")
     public ResponseEntity<Post> update(@PathVariable String id, @RequestBody Post data) {
-        var maybePost = posts.stream()
-            .filter(p -> p.getTitle().equals(id))
-            .findFirst();
+        var maybePost = postRepository.findById(Long.valueOf(id));
         if (maybePost.isPresent()) {
             var post = maybePost.get();
             post.setTitle(data.getTitle());
             post.setContent(data.getContent());
-            post.setAuthor(data.getAuthor());
-            post.setCreatedAt(LocalDateTime.now());
-            return ResponseEntity.ok().body(data);
+            post.setPublished(data.isPublished());
+            postRepository.save(post);
+            return ResponseEntity.ok().body(post);
         }
         return ResponseEntity.notFound().build();
 
     }
 
-    @DeleteMapping("/{id}") // Удаление страницы
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> destroy(@PathVariable String id) {
-        boolean isDeleted = posts.removeIf(p -> p.getTitle().equals(id));
-        if(!isDeleted) {
-            return ResponseEntity.notFound().header("Error", "Post with id = " + id + " not found").build();
+        boolean postIsExist = postRepository.existsById(Long.valueOf(id));
+        if(postIsExist) {
+            postRepository.deleteById(Long.valueOf(id));
+            return ResponseEntity.noContent().header("Deleted", "post with id = " + id).build();
         }
-        return ResponseEntity.noContent().header("Deleted", "post with id = " + id).build();
+        return ResponseEntity.notFound().header("Error", "Post with id = " + id + " not found").build();
     }
 }

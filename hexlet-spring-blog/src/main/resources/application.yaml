@@ -1,0 +1,25 @@
+spring:
+  jpa:
+    show-sql: true # Заодно включает показ sql-запросов
+    hibernate:
+      ddl-auto: update
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driverClassName: org.h2.Driver
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true
+
+
+output:
+    ansi:
+    enabled: always    # цветной вывод логотипа
+logging:
+    pattern:
+        dateformat: "yyyy-MM-dd HH:mm:ss"  # кастомный формат даты в логах
+
+app:
+    welcome-message: "Welcome tos Spring blog!"  # наше кастомное сообщение
+    admin-email: "AbsoluteEmail"
