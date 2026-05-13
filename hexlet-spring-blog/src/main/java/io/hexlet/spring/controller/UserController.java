@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.hexlet.spring.exception.ResourceNotFoundException;
 import io.hexlet.spring.model.User;
 import io.hexlet.spring.repository.UserRepository;
 
@@ -45,12 +46,10 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable String id) {
-        boolean userIsExists = userRepository.existsById(Long.valueOf(id));
-        if(userIsExists) {
-            userRepository.deleteById(Long.valueOf(id));
-            return ResponseEntity.status(204).build();
-        }
-        return ResponseEntity.notFound().header("Error", "User with id = " + id + " not found").build();
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable String id) {
+        User user = userRepository.findById(Long.valueOf(id))
+                .orElseThrow(() -> new ResourceNotFoundException(id + " Not Found"));
+        userRepository.deleteById(Long.valueOf(id));
     }
 }
