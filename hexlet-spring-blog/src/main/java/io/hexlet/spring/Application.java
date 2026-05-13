@@ -6,7 +6,7 @@ import java.util.Optional;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,28 +21,27 @@ import org.springframework.web.bind.annotation.RestController;
 import io.hexlet.spring.model.Page;
 
 @SpringBootApplication
+@EnableJpaAuditing
 @RestController
 public class Application {
-    // Хранилище добавленных страниц, то есть обычный список
     private List<Page> pages = new ArrayList<Page>();
 
-    // Запуск приложения
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }
 
-    @GetMapping("/pages") // Список страниц
+    @GetMapping("/pages")
     public List<Page> index(@RequestParam(defaultValue = "10") Integer limit) {
         return pages.stream().limit(limit).toList();
     }
 
-    @PostMapping("/pages") // Создание страницы
+    @PostMapping("/pages")
     public Page create(@RequestBody Page page) {
         pages.add(page);
         return page;
     }
 
-    @GetMapping("/pages/{id}") // Вывод страницы
+    @GetMapping("/pages/{id}")
     public Optional<Page> show(@PathVariable String id) {
         var page = pages.stream()
             .filter(p -> p.getSlug().equals(id))
@@ -50,7 +49,7 @@ public class Application {
         return page;
     }
 
-    @PutMapping("/pages/{id}") // Обновление страницы
+    @PutMapping("/pages/{id}")
     public Page update(@PathVariable String id, @RequestBody Page data) {
         var maybePage = pages.stream()
             .filter(p -> p.getSlug().equals(id))
@@ -64,7 +63,7 @@ public class Application {
         return data;
     }
 
-    @DeleteMapping("/pages/{id}") // Удаление страницы
+    @DeleteMapping("/pages/{id}")
     public void destroy(@PathVariable String id) {
         pages.removeIf(p -> p.getSlug().equals(id));
     }
