@@ -1,11 +1,14 @@
 package io.hexlet.spring.controller;
 
 import java.net.URI;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -32,13 +35,26 @@ public class PostController {
     @Autowired
     private PostRepository postRepository;
 
-    @GetMapping
-    public ResponseEntity<List<Post>> index(@RequestParam(defaultValue="10") Integer limit){
-        List<Post> result = postRepository.findAll().stream().limit(limit).toList();
-        return ResponseEntity.ok()
-                .header("Total-Count", String.valueOf(postRepository.count()))
-                .body(result);
+// like deprecated
+//    @GetMapping
+//    public ResponseEntity<List<Post>> index(@RequestParam(defaultValue="10") Integer limit){
+//        List<Post> result = postRepository.findAll().stream().limit(limit).toList();
+//        return ResponseEntity.ok()
+//                .header("Total-Count", String.valueOf(postRepository.count()))
+//                .body(result);
+//    }
+
+    @GetMapping(path="")
+    public Page<Post> getPublishedPosts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDirection)
+    {
+        Pageable pageable = PageRequest.of(page, size, sortDirection.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending());
+        return postRepository.findByPublishedTrue(pageable);
     }
+
     @PostMapping
     public ResponseEntity<Post> createPost(@Valid @RequestBody Post post) {
         if(post.getTitle() == null || post.getTitle().trim().isEmpty() || post.getContent() == null || post.getContent().trim().isEmpty()) {
