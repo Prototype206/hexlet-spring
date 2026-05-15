@@ -32,8 +32,12 @@ import jakarta.validation.Valid;
 public class PostController {
     //private List<Post> posts = new ArrayList<>();
 
-    @Autowired
+    //@Autowired
     private PostRepository postRepository;
+
+    public PostController(PostRepository postRepository) {
+        this.postRepository = postRepository;
+    }
 
 // like deprecated
 //    @GetMapping

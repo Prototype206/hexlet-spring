@@ -29,6 +29,10 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
+//    public UserController(UserRepository userRepository) {
+//        this.userRepository = userRepository;
+//    }
+
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
     public List<User> index(@RequestParam(defaultValue="10") Integer limit){
