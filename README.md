@@ -1,0 +1,2 @@
+![CI](https://github.com/Prototype206/hexlet-spring-blog/actions/workflows/ci.yml/badge.svg)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Prototype206_hexlet-spring&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Prototype206_hexlet-spring)
