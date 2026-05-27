@@ -4,7 +4,7 @@ plugins {
   id("org.springframework.boot") version "4.1.0-RC1"
   id("io.spring.dependency-management") version "1.1.7"
   jacoco
-  id("org.sonarqube") version "4.4.1.3373"
+  id("org.sonarqube") version "7.3.0.8198"
 }
 
 group = "io.hexlet"
@@ -54,8 +54,8 @@ tasks.check {
 
 sonarqube {
     properties {
-        property("sonar.projectKey", "YOUR_PROJECT_KEY")
-        property("sonar.organization", "YOUR_ORG") // для SonarCloud
+        property("sonar.projectKey", "Prototype206_hexlet-spring")
+        property("sonar.organization", "prototypes-organization") // для SonarCloud
         property("sonar.host.url", "https://sonarcloud.io") // или ваш SonarQube
         property("sonar.java.coveragePlugin", "jacoco")
         property("sonar.junit.reportPaths", "build/test-results/test")
